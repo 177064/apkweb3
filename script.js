@@ -25,9 +25,10 @@
   // })
 
  weatherForm.addEventListener("submit", function(event) {
+    answer.textContent = "Loading…"
     event.preventDefault()
     let input = document.getElementById('input')
-   fetch('https://corsproxy.io/?https://www.ncei.noaa.gov/cdo-web/api/v2/stations', {
+   fetch('https://corsproxy.io/?https://www.ncei.noaa.gov/cdo-web/api/v2/datasets', {
      method: 'GET',
      headers: {
        'token': token
@@ -46,7 +47,7 @@
         const station = post.results[0];
 
         if (!post.results || post.results.length === 0) {
-          answer.innerHTML = `<p>Brak danych o stacjach.</p>`;
+          answer.innerHTML = `<p>Brak danych.</p>`;
           return;
         }
 
@@ -57,9 +58,9 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>State</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
+                <th>Description</th>
+                <th>Mindate</th>
+                <th>Maxdate</th>
               </tr>
         `;
 
@@ -68,9 +69,9 @@
             <tr>
               <td>${station.id}</td>
               <td>${station.name}</td>
-              <td>${station.state ?? "—"}</td>
-              <td>${station.latitude}</td>
-              <td>${station.longitude}</td>
+              <td>${station.description ?? "—"}</td>
+              <td>${station.mindate}</td>
+              <td>${station.maxdate}</td>
             </tr>
           `;
         });
