@@ -2,3 +2,13 @@ html {
   height: 100%;
   width: 100%;
 }
+
+.my-table {
+  border-collapse: collapse;
+}
+
+.my-table th,
+.my-table td {
+  border: 1px solid #808080;
+  padding: 6px;
+}
