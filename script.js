@@ -1,16 +1,20 @@
 (function() {
-  const countryForm = document.getElementById('countryForm')
+  const weatherForm = document.getElementById('weatherForm')
   const answer = document.getElementById('answer')
 
 
-  countryForm.addEventListener("submit", function(event) {
+  const token = 'KPEHEwUTKSwGiDpOnMPYsPyvuIrbPztf';
+
+
+  weatherForm.addEventListener("submit", function(event) {
     event.preventDefault()
-    let input = document.getElementById('input')
-    if (input.value === "") {
-      answer.innerHTML = `<p style="color:red;">Please enter a capital</p>`;
-      return;
-    }
-    fetch(`https://restcountries.com/v3.1/capital/${input.value}`)
+    answer.innerHTML = `<p>Loading...</p>`;
+    fetch('https://corsproxy.io/?https://www.ncei.noaa.gov/cdo-web/api/v2/stations', {
+      method: 'GET',
+      headers: {
+        'token': token
+      }
+    })
       .then(response => {
         if (!response.ok) {
           answer.innerHTML = `Error: ${response.status}`;
@@ -20,30 +24,47 @@
       })
       .then(post => {
         console.log(post);
-        answer.innerHTML = `
-        <div>
-        <table class="my-table">
-        <tr>
-        <th>Name</th>
-        <th>Capital</th>
-        <th>Population</th>
-        <th>Region</th>
-        <th>Subregion</th>
-        </tr>
-        <tr>
-          <td>${post[0].name.common}</td>
-          <td>${post[0].capital?.[0] ?? "—"}</td>
-          <td>${post[0].population}</td>
-          <td>${post[0].region}</td>
-          <td>${post[0].subregion}</td>
-        </tr>
-        </table>
-        </div>
+
+        if (!post.results || post.results.length === 0) {
+          answer.innerHTML = `<p>Brak danych o stacjach.</p>`;
+          return;
+        }
+
+
+        let html = `
+          <div>
+            <table class="my-table">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>State</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+              </tr>
         `;
+
+        post.results.forEach(station => {
+          html += `
+            <tr>
+              <td>${station.id}</td>
+              <td>${station.name}</td>
+              <td>${station.state ?? "—"}</td>
+              <td>${station.latitude}</td>
+              <td>${station.longitude}</td>
+            </tr>
+          `;
+        });
+
+        html += `
+            </table>
+          </div>
+        `;
+
+        answer.innerHTML = html;
       })
-      .catch(err => {
-        answer.innerHTML = `<p style="color:red;">${err.message}</p>`;
-        console.error(err);
+      .catch(error => {
+        console.error('Error:', error);
+        answer.innerHTML = `<p>${error.message}</p>`;
       })
   })
 
