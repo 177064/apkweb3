@@ -1,89 +1,36 @@
 (function() {
 
-  const weatherForm = document.getElementById('weatherForm')
+  //const weatherForm = document.getElementById('weatherForm')
   const answer = document.getElementById('answer')
 
 
-  const token = 'KPEHEwUTKSwGiDpOnMPYsPyvuIrbPztf';
+  //const token = 'cAqzaFYzQrQH7IraNbPgoRV6p0K3aNB7';
 
-  
-  weatherForm.addEventListener("submit", function(event) {
 
-    event.preventDefault()
+  example.addEventListener("click", function() {
 
-    answer.textContent = "Loading…";
-
-    const datasetid = document.getElementById("datasetid").value;
-    const locationid = document.getElementById("locationid").value;
-    const startdate = document.getElementById("startdate").value;
-    const enddate = document.getElementById("enddate").value;
-
-    if (!datasetid || !locationid || !startdate || !enddate) {
-      answer.innerHTML = `<p>Wszystkie pola są wymagane.</p>`;
-      return;
-    }
-
-    const url =
-      `https://corsproxy.io/?https://www.ncei.noaa.gov/cdo-web/api/v2/data` +
-      `?datasetid=${datasetid}` +
-      `&locationid=${locationid}` +
-      `&startdate=${startdate}` +
-      `&enddate=${enddate}`;
-
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        'token': token
-      }
-    })
+  answer.innerHTML = "Loading…";
+    
+    fetch('https://api.giphy.com/v1/gifs/random?api_key=cAqzaFYzQrQH7IraNbPgoRV6p0K3aNB7&tag=&rating=g')
       .then(response => {
         if (!response.ok) {
-          answer.innerHTML = `${response.status}`;
-          throw new Error(`${response.status}`);
+          answer.innerHTML = `Error: ${response.status}`;
+          throw new Error(`Error: ${response.status}`);
         }
         return response.json();
       })
-      .then(post => {
-        console.log(post);
+      .then(data => {
+        console.log(data);
 
-        if (!post.results || post.results.length === 0) {
-          answer.innerHTML = `<p>Brak danych.</p>`;
-          return;
-        }
-
-
-        let html = `
-          <div>
-            <table class="my-table">
-              <tr>
-                  <th>Date</th>
-                  <th>Datatype</th>
-                  <th>Value</th>
-              </tr>
-        `;
-
-        post.results.forEach(station => {
-          html += `
-            <tr>
-              <td>${station.date}</td>
-              <td>${station.datatype}</td>
-              <td>${station.value}</td>
-            </tr>
-          `;
-        });
-
-        html += `
-            </table>
-          </div>
-        `;
-
-        answer.innerHTML = html;
-      })
-      .catch(err => {
-        answer.innerHTML = `<p style="color:red;">${err.message}</p>`;
-        console.error(err);
+        answer.innerHTML = `<img src="${data.data.images.original.url}" alt="Random GIF">`;
+        
       });
-  })
+  });
+
+
+
+
+
 
 
 
