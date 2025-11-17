@@ -11,16 +11,18 @@
 <body>
 
 
-  <div>
 
 
-    <button id="example">RANDOM GIF</button>
-
-
-  </div>
-
-
-
+  <form method="fetch" id="giphyForm">
+    <h1>FIND GIF</h1>
+    <label for="searchphrase">search for:</label>
+    <input id="searchphrase" placeholder="searchphrase" />
+    <label for="quantity">display this many gifs maximum:</label>
+    <input type="number" id="quantity" name="quantity" min="1" max="50" value="10">
+    <div>
+      <button type="submit" class="full">SHOW</button>
+    </div>
+  </form>
 
 
   <div id="answer">

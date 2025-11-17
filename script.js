@@ -1,17 +1,27 @@
 (function() {
 
-  //const weatherForm = document.getElementById('weatherForm')
+  const giphyForm = document.getElementById('giphyForm')
   const answer = document.getElementById('answer')
 
 
-  //const token = 'cAqzaFYzQrQH7IraNbPgoRV6p0K3aNB7';
 
+  giphyForm.addEventListener("submit", function(event) {
 
-  example.addEventListener("click", function() {
+    event.preventDefault()
 
-  answer.innerHTML = "Loading…";
-    
-    fetch('https://api.giphy.com/v1/gifs/random?api_key=cAqzaFYzQrQH7IraNbPgoRV6p0K3aNB7&tag=&rating=g')
+    answer.innerHTML = "Loading…";
+
+    const quantity = document.getElementById("quantity").value;
+    var searchphrase = document.getElementById("searchphrase").value;
+
+    searchphrase = encodeURIComponent(searchphrase);
+
+    const url =
+      `https://api.giphy.com/v1/gifs/search?api_key=cAqzaFYzQrQH7IraNbPgoRV6p0K3aNB7` +
+      `&q=${searchphrase}` +
+      `&limit=${quantity}` + `&offset=0&rating=g&lang=en&bundle=messaging_non_clips`;
+
+    fetch(url)
       .then(response => {
         if (!response.ok) {
           answer.innerHTML = `Error: ${response.status}`;
@@ -22,8 +32,19 @@
       .then(data => {
         console.log(data);
 
-        answer.innerHTML = `<img src="${data.data.images.original.url}" alt="Random GIF">`;
-        
+        if (data.data.length === 0) {
+          answer.innerHTML = `Brak wyników`;
+          return;
+        }
+
+        let html = `<div>`;
+        for (let i = 0; i < data.data.length; i++) {
+          html += `<img class="gif_img" src="${data.data[i].images.original.url}">`;
+        }
+        html += `</div>`;
+
+        answer.innerHTML = html;
+
       });
   });
 

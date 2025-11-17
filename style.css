@@ -12,3 +12,12 @@ html {
   border: 1px solid #808080;
   padding: 6px;
 }
+
+
+.gif_img {
+  display: block;
+  height: 256px;
+  width: auto;
+  margin-bottom: 10px;
+  border: 1px solid black;
+}
