@@ -6,10 +6,31 @@
 
   const token = 'KPEHEwUTKSwGiDpOnMPYsPyvuIrbPztf';
 
+  
   weatherForm.addEventListener("submit", function(event) {
-    answer.textContent = "Loading…"
+
     event.preventDefault()
-    fetch('https://corsproxy.io/?https://www.ncei.noaa.gov/cdo-web/api/v2/datasets', {
+
+    answer.textContent = "Loading…";
+
+    const datasetid = document.getElementById("datasetid").value;
+    const locationid = document.getElementById("locationid").value;
+    const startdate = document.getElementById("startdate").value;
+    const enddate = document.getElementById("enddate").value;
+
+    if (!datasetid || !locationid || !startdate || !enddate) {
+      answer.innerHTML = `<p>Wszystkie pola są wymagane.</p>`;
+      return;
+    }
+
+    const url =
+      `https://corsproxy.io/?https://www.ncei.noaa.gov/cdo-web/api/v2/data` +
+      `?datasetid=${datasetid}` +
+      `&locationid=${locationid}` +
+      `&startdate=${startdate}` +
+      `&enddate=${enddate}`;
+
+    fetch(url, {
       method: 'GET',
       headers: {
         'token': token
@@ -17,8 +38,8 @@
     })
       .then(response => {
         if (!response.ok) {
-          answer.innerHTML = `Error: ${response.status}`;
-          throw new Error(`Error: ${response.status}`);
+          answer.innerHTML = `${response.status}`;
+          throw new Error(`${response.status}`);
         }
         return response.json();
       })
@@ -35,22 +56,18 @@
           <div>
             <table class="my-table">
               <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Mindate</th>
-                <th>Maxdate</th>
+                  <th>Date</th>
+                  <th>Datatype</th>
+                  <th>Value</th>
               </tr>
         `;
 
         post.results.forEach(station => {
           html += `
             <tr>
-              <td>${station.id}</td>
-              <td>${station.name}</td>
-              <td>${station.description ?? "—"}</td>
-              <td>${station.mindate}</td>
-              <td>${station.maxdate}</td>
+              <td>${station.date}</td>
+              <td>${station.datatype}</td>
+              <td>${station.value}</td>
             </tr>
           `;
         });
@@ -60,7 +77,6 @@
           </div>
         `;
 
-        // Wstawiamy do elementu answer
         answer.innerHTML = html;
       })
       .catch(err => {
