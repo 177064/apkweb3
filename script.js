@@ -2,37 +2,33 @@
 
   const giphyForm = document.getElementById('giphyForm')
   const answer = document.getElementById('answer')
+  const prevBtn = document.getElementById('prevBtn')
+  const nextBtn = document.getElementById('nextBtn')
 
+  let searchphrase = "";   
+  let offset = 0;       
+  let limit = 2;  
 
-
-  giphyForm.addEventListener("submit", function(event) {
-
-    event.preventDefault()
-
+  function fetchGifs(searchTerm, offsetValue = 0) {
     answer.innerHTML = "Loading…";
-
-    const quantity = document.getElementById("quantity").value;
-    var searchphrase = document.getElementById("searchphrase").value;
-
-    searchphrase = encodeURIComponent(searchphrase);
 
     const url =
       `https://api.giphy.com/v1/gifs/search?api_key=cAqzaFYzQrQH7IraNbPgoRV6p0K3aNB7` +
-      `&q=${searchphrase}` +
-      `&limit=${quantity}` + `&offset=0&rating=g&lang=en&bundle=messaging_non_clips`;
+      `&q=${encodeURIComponent(searchTerm)}` +
+      `&limit=${limit}&offset=${offsetValue}&rating=g&lang=en`;
 
     fetch(url)
       .then(response => {
         if (!response.ok) {
-          answer.innerHTML = `Error: ${response.status}`;
-          throw new Error(`Error: ${response.status}`);
+          answer.innerHTML = `${response.status}`;
+          throw new Error(`${response.status}`);
         }
         return response.json();
       })
       .then(data => {
         console.log(data);
 
-        if (data.data.length === 0) {
+        if (!data.data || data.data.length === 0) {
           answer.innerHTML = `Brak wyników`;
           return;
         }
@@ -42,17 +38,36 @@
           html += `<img class="gif_img" src="${data.data[i].images.original.url}">`;
         }
         html += `</div>`;
-
         answer.innerHTML = html;
-
+      })
+      .catch(err => {
+        answer.innerHTML = `<p style="color:red;">${err.message}</p>`;
+        console.error(err);
       });
+  }
+
+  giphyForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    searchphrase = document.getElementById("searchphrase").value;
+    limit = parseInt(document.getElementById("quantity").value) || 2;
+    offset = 0;
+    if (searchphrase.trim() === "") {
+      answer.innerHTML = "Please enter a search term";
+      return;
+    }
+    fetchGifs(searchphrase, offset);
   });
 
+  prevBtn.addEventListener("click", function() {
+    if (offset - limit >= 0) {
+      offset -= limit;
+      fetchGifs(searchphrase, offset);
+    }
+  });
 
-
-
-
-
-
+  nextBtn.addEventListener("click", function() {
+    offset += limit;
+    fetchGifs(searchphrase, offset);
+  });
 
 })();
